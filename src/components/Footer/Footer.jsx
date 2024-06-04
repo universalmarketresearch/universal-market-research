@@ -19,6 +19,7 @@ const Footer = () => {
                     src={logo}
                     width={200}
                     height={300}
+                    alt="company logo"
                     className="h-12 "
                   />
                 </Link>

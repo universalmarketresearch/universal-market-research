@@ -39,7 +39,7 @@ function Navbar() {
     >
       <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between p-3">
         <Link href={"/"}>
-          <Image src={logo} width={200} height={300} className="h-11" />
+          <Image src={logo} width={200} height={300} alt="company logo" className="h-11" />
         </Link>
         <button
           id="navbar-toggle"
