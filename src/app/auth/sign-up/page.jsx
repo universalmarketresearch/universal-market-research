@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-const page = () => {
+const Page = () => {
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -162,4 +162,4 @@ const page = () => {
     </div>
   );
 };
-export default page;
+export default Page;

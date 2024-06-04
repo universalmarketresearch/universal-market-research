@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { IndustryVerticalsPageData } from "@/database/IndustryVerticalsPageData";
 import { useParams } from "next/navigation";
 import Skeleton from "react-loading-skeleton";
@@ -14,17 +14,16 @@ const IndustryVerticals = () => {
   const [reportOfCurrentCategory, setReportOfCurrentCategory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dataLoading, setDataLoading] = useState(true);
-  const pathname = useParams();
-  const category = pathname?.category;
+  const { category } = useParams();
 
-  const reportByCategory = async () => {
+  const reportByCategory = useCallback(async () => {
     try {
       const response = await fetch(
         `${FRONTEND_BASE_URL}api/report-by-category?category=${category}`,
         {
           method: "GET",
           cache: "no-store",
-        },
+        }
       );
       const data = await response.json();
       setReportOfCurrentCategory(data?.data);
@@ -32,15 +31,15 @@ const IndustryVerticals = () => {
     } catch (error) {
       console.log(error);
     }
-  };
-
-  useEffect(() => {
-    reportByCategory();
   }, [category]);
 
   useEffect(() => {
+    reportByCategory();
+  }, [reportByCategory]);
+
+  useEffect(() => {
     const pageData = IndustryVerticalsPageData.find(
-      (item) => item.category.toLowerCase() === category.toLowerCase(),
+      (item) => item.category.toLowerCase() === category.toLowerCase()
     );
     setpageInfo(pageData ? [pageData] : []);
     setLoading(false);

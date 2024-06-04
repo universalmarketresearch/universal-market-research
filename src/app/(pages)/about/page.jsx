@@ -157,7 +157,7 @@ const About = () => {
               <p className="mt-6 text-lg leading-8 text-gray-600">
                 At Universal Market Research, we offer a wide range of
                 consulting services designed to help businesses thrive in
-                today's competitive landscape. Here are some of the services we
+                today&apos;s competitive landscape. Here are some of the services we
                 provide:
               </p>
             </div>
