@@ -20,8 +20,8 @@ const Contact = () => {
                   Get in Touch With Us
                 </h2>
                 <p className="text-body-color dark:text-dark-6 mb-9 text-base leading-relaxed">
-                  We're here to assist you. Reach out to us with your inquiries,
-                  feedback, or collaboration proposals, and we'll get back to
+                  We&apos;re here to assist you. Reach out to us with your inquiries,
+                  feedback, or collaboration proposals, and we&apos;ll get back to
                   you promptly. Your satisfaction is our priority.
                 </p>
 

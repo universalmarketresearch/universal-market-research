@@ -2,13 +2,13 @@
 import { GlobalContext } from "@/context/GlobalContext";
 import Cookies from "js-cookie";
 import { useParams, useRouter } from "next/navigation";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 const FRONTEND_BASE_URL = process.env.NEXT_PUBLIC_FRONTEND_BASE_URL;
 
-const page = () => {
+const Page = () => {
   const [reportData, setReportData] = useState([]);
   const { isLoggedIn, setSelectedReportToUpdate } = useContext(GlobalContext);
   const params = useParams();
@@ -22,14 +22,14 @@ const page = () => {
 
   const router = useRouter();
 
-  const productById = async () => {
+  const productById = useCallback(async () => {
     try {
       const response = await fetch(
         `${FRONTEND_BASE_URL}api/report-by-id?id=${id}`,
         {
           method: "GET",
           cache: "no-store",
-        },
+        }
       );
       const data = await response.json();
       if (typeof data === "object" && !Array.isArray(data)) {
@@ -42,11 +42,11 @@ const page = () => {
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     productById();
-  }, [id]);
+  }, [productById]);
 
   const delete_report = async (id) => {
     try {
@@ -239,4 +239,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
