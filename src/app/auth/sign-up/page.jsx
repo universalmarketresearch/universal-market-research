@@ -45,7 +45,7 @@ const Page = () => {
           email: "",
           password: "",
         });
-        router.push("/admin/sign-in");
+        router.push("/auth/sign-in");
       } else {
         toast.error(data.message);
       }
