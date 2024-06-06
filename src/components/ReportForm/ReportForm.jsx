@@ -130,7 +130,9 @@ const ReportForm = ({ onSubmit, isLoading, selectedReportToUpdate }) => {
       postedBy,
     };
     onSubmit(formData);
+    console.log("Form Data: ", formData);
   };
+
 
   const addTopKeyPlayer = () => {
     setTopKeyPlayers((prevPlayers) => [...prevPlayers, { heading: "" }]);
@@ -234,7 +236,7 @@ const ReportForm = ({ onSubmit, isLoading, selectedReportToUpdate }) => {
   };
 
   return (
-    <div className="mx-auto mt-10 max-w-7xl p-4 md:mt-20">
+    <div className="mx-auto mt-20 max-w-7xl p-4 md:mt-20">
       <h1 className="mb-4 text-center text-2xl font-bold">
        {isUpdatePage ? ("Update The Report") : ("Add New Report")}
       </h1>
@@ -316,7 +318,7 @@ const ReportForm = ({ onSubmit, isLoading, selectedReportToUpdate }) => {
           <label htmlFor="topKeyPlayers" className="mb-2 block">
             Top Key Players
           </label>
-          {topKeyPlayers.map((player, index) => (
+          {topKeyPlayers?.map((player, index) => (
             <input
               key={index}
               type="text"
@@ -354,7 +356,7 @@ const ReportForm = ({ onSubmit, isLoading, selectedReportToUpdate }) => {
           <label htmlFor="marketReportHighlight" className="mb-2 block">
             Market Report Highlight
           </label>
-          {marketReportHighlight.map((highlight, index) => (
+          {marketReportHighlight?.map((highlight, index) => (
             <div key={index}>
               <input
                 type="text"
@@ -388,7 +390,7 @@ const ReportForm = ({ onSubmit, isLoading, selectedReportToUpdate }) => {
           <label htmlFor="keyIndustryDevelopment" className="mb-2 block">
             Key Industry Development
           </label>
-          {keyIndustryDevelopment.map((development, index) => (
+          {keyIndustryDevelopment?.map((development, index) => (
             <div key={index}>
               <input
                 type="text"
@@ -422,7 +424,7 @@ const ReportForm = ({ onSubmit, isLoading, selectedReportToUpdate }) => {
           <label htmlFor="marketSegmentation" className="mb-2 block">
             Market Segmentation
           </label>
-          {marketSegmentation.map((segmentation, index) => (
+          {marketSegmentation?.map((segmentation, index) => (
             <div key={index}>
               <input
                 type="text"
@@ -470,7 +472,7 @@ const ReportForm = ({ onSubmit, isLoading, selectedReportToUpdate }) => {
           <label htmlFor="BasedOnRegion" className="mb-2 block">
             Market based on region
           </label>
-          {basedOnRegion.map((region, index) => (
+          {basedOnRegion?.map((region, index) => (
             <div key={index}>
               <input
                 type="text"
