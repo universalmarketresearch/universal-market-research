@@ -1,29 +1,30 @@
 import mongoose from "mongoose";
-const TopKeyPlayersSchema = new mongoose.Schema({
+
+const topKeyPlayersSchema = new mongoose.Schema({
   heading: String,
 });
 
-const MarketReportHighlightSchema = new mongoose.Schema({
+const marketReportHighlightSchema = new mongoose.Schema({
   heading: String,
   highlightData: String,
 });
 
-const KeyIndustryDevelopmentSchema = new mongoose.Schema({
+const keyIndustryDevelopmentSchema = new mongoose.Schema({
   year: String,
   data: String,
 });
 
-const MarketSegmentationSchema = new mongoose.Schema({
+const marketSegmentationSchema = new mongoose.Schema({
   heading: String,
   content: [String],
 });
 
-const BasedOnRegionSchema = new mongoose.Schema({
+const basedOnRegionSchema = new mongoose.Schema({
   heading: String,
   content: [String],
 });
 
-const ReportSchema = new mongoose.Schema({
+const reportSchema = new mongoose.Schema({
   reportID: {
     type: String,
     unique: true,
@@ -33,12 +34,12 @@ const ReportSchema = new mongoose.Schema({
   reportTitle: String,
   reportBio: String,
   marketOverview: String,
-  TopKeyPlayers: [TopKeyPlayersSchema],
-  MarketDynamicFactors: String,
-  MarketReportHighlight: [MarketReportHighlightSchema],
-  KeyIndustryDevelopment: [KeyIndustryDevelopmentSchema],
-  MarketSegmentation: [MarketSegmentationSchema],
-  BasedOnRegion: [BasedOnRegionSchema],
+  topKeyPlayers: [topKeyPlayersSchema],
+  marketDynamicFactors: String,
+  marketReportHighlight: [marketReportHighlightSchema],
+  keyIndustryDevelopment: [keyIndustryDevelopmentSchema],
+  marketSegmentation: [marketSegmentationSchema],
+  basedOnRegion: [basedOnRegionSchema],
   publishDate: String,
   baseYear: String,
   noOfPages: String,
@@ -49,5 +50,5 @@ const ReportSchema = new mongoose.Schema({
   },
 });
 
-const Report = mongoose.models.Report || mongoose.model("Report", ReportSchema);
+const Report = mongoose.models.Report || mongoose.model("Report", reportSchema);
 export default Report;
