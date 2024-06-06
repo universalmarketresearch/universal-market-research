@@ -6,41 +6,44 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import noresult from "../../../Images/no-results.png";
+import Image from "next/image";
+
 const FRONTEND_BASE_URL = process.env.NEXT_PUBLIC_FRONTEND_BASE_URL;
 
 const Page = () => {
-  const [reportData, setReportData] = useState([]);
+  const [reportData, setReportData] = useState(null);
   const { isLoggedIn, setSelectedReportToUpdate } = useContext(GlobalContext);
   const params = useParams();
   const id = params?.slug?.[1];
   const [loading, setLoading] = useState(true);
   const [isDeletingReport, setIsDeletingReport] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  const router = useRouter();
 
   const productById = useCallback(async () => {
     try {
       const response = await fetch(
         `${FRONTEND_BASE_URL}api/report-by-id?id=${id}`,
         {
-          method: "GET",
-          cache: "no-store",
+          method: 'GET',
+          cache: 'no-store',
         }
       );
       const data = await response.json();
-      if (typeof data === "object" && !Array.isArray(data)) {
-        setReportData(data?.data);
+      if (data && typeof data === 'object') {
+        setReportData(data.data);
       } else {
-        console.error("Received data is not an object:", data);
-        setReportData([]);
+        console.error('Received data is not an object:', data);
+        setReportData(null);
       }
       setLoading(false);
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   }, [id]);
 
@@ -48,21 +51,20 @@ const Page = () => {
     productById();
   }, [productById]);
 
-  const delete_report = async (id) => {
+  const deleteReport = async () => {
     try {
       setIsDeletingReport(true);
       const res = await fetch(`/api/delete-report?id=${reportData._id}`, {
-        method: "DELETE",
+        method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer ${Cookies.get('token')}`,
         },
       });
-
       const data = await res.json();
       if (data.success) {
         toast.success(data.message);
         setIsDeletingReport(false);
-        router.push("/");
+        router.push('/');
       } else {
         toast.error(data.message);
       }
@@ -77,14 +79,6 @@ const Page = () => {
     setSelectedReportToUpdate(reportData);
     router.push(`/update-report`);
   };
-
-  // console.log(reportData);
-
-  let reportTitleInitials = "";
-  if (reportData?.length > 0) {
-    const words = reportData[0].reportTitle?.split(" ");
-    reportTitleInitials = words.slice(0, 2).join(" ");
-  }
 
   return (
     <div className="mx-auto mt-10 max-w-7xl px-5 pb-10 md:mt-20">
@@ -116,7 +110,7 @@ const Page = () => {
                     {reportData?.publishDate}
                   </p>
                   <p>
-                    <span className="font-medium">Base Year : </span>{" "}
+                    <span className="font-medium">Base Year : </span>{' '}
                     {reportData?.baseYear}
                   </p>
                   <p>
@@ -127,10 +121,10 @@ const Page = () => {
                     <>
                       <button
                         type="submit"
-                        onClick={() => delete_report(reportData.reportID)}
+                        onClick={deleteReport}
                         disabled={isDeletingReport}
                         className={`w-full rounded bg-red-400 px-6 py-1.5 font-medium leading-normal text-white shadow transition duration-150 ease-in-out  disabled:opacity-50 ${
-                          isDeletingReport ? "cursor-not-allowed" : ""
+                          isDeletingReport ? 'cursor-not-allowed' : ''
                         }`}
                       >
                         {isDeletingReport ? (
@@ -138,7 +132,7 @@ const Page = () => {
                             <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-t-2 border-white"></div>
                           </div>
                         ) : (
-                          "Delete report"
+                          'Delete report'
                         )}
                       </button>
                       <button
@@ -156,53 +150,53 @@ const Page = () => {
                 </div>
               </div>
               <div className="mt-3 px-2">
-                <p className="pb-2 text-xl font-semibold">
-                  Market Overview :-{" "}
-                </p>
+                <p className="pb-2 text-xl font-semibold">Market Overview :- </p>
                 <p className="whitespace-pre-wrap pb-2 text-justify">
                   {reportData?.marketOverview}
                 </p>
+
+                {/* Top Key Players Section */}
                 <p className="pb-2 text-xl font-semibold">
-                  Top Key Players Covered in {reportTitleInitials} Market:
+                  Top Key Players Covered in{' '}
+                  {reportData?.reportTitle.split(' ').slice(0, 2).join(' ')} Market:
                 </p>
                 <ul className="list-disc pb-2 pl-7 md:pl-10">
-                  {reportData?.TopKeyPlayers?.map((player) => (
+                  {reportData?.topKeyPlayers?.map((player) => (
                     <li key={player?._id}>{player?.heading}</li>
                   ))}
                 </ul>
-                <p className="pb-2 text-xl font-semibold">
-                  Market Dynamics and Factors:
-                </p>
+
+                {/* Market Dynamics and Factors */}
+                <p className="pb-2 text-xl font-semibold">Market Dynamics and Factors:</p>
                 <p className="whitespace-pre-wrap pb-2 text-justify">
-                  {reportData?.MarketDynamicFactors}
+                  {reportData?.marketDynamicFactors}
                 </p>
+
+                {/* Market Report Highlight */}
                 <p className="pb-2 text-xl font-semibold">
-                  {reportTitleInitials} Market Report Highlight:
+                  {reportData?.reportTitle.split(' ').slice(0, 2).join(' ')} Market Report Highlight:
                 </p>
-                {reportData?.MarketReportHighlight?.map((highlight) => (
+                {reportData?.marketReportHighlight?.map((highlight) => (
                   <p className="pb-2 text-justify" key={highlight?.heading}>
-                    <span className="font-semibold">
-                      By {highlight?.heading},{" "}
-                    </span>{" "}
-                    {highlight?.highlightData}
+                    <span className="font-semibold">By {highlight?.heading}, </span> {highlight?.highlightData}
                   </p>
                 ))}
-                <p className="pb-2 text-xl font-semibold">
-                  Key Industry Development:
-                </p>
-                {reportData?.KeyIndustryDevelopment?.map((industrykey) => (
+
+                {/* Key Industry Development */}
+                <p className="pb-2 text-xl font-semibold">Key Industry Development:</p>
+                {reportData?.keyIndustryDevelopment?.map((industrykey) => (
                   <p className="pb-2 text-justify" key={industrykey?.year}>
-                    <span className="font-semibold">
-                      In {industrykey?.year},{" "}
-                    </span>
+                    <span className="font-semibold">In {industrykey?.year}, </span>
                     {industrykey?.data}
                   </p>
                 ))}
+
+                {/* Market Segmentation */}
                 <p className="pb-2 text-xl font-semibold">
-                  {reportTitleInitials} Market Segmentation:
+                  {reportData?.reportTitle.split(' ').slice(0, 2).join(' ')} Market Segmentation:
                 </p>
                 <div>
-                  {reportData?.MarketSegmentation?.map((segment) => (
+                  {reportData?.marketSegmentation?.map((segment) => (
                     <div key={segment?._id}>
                       <p className="pb-2 font-semibold">{segment?.heading}</p>
                       <ul className="list-disc pb-2 pl-7 md:pl-10">
@@ -213,11 +207,13 @@ const Page = () => {
                     </div>
                   ))}
                 </div>
+
+                {/* Market based on region */}
                 <p className="pb-2 text-xl font-semibold">
-                  {reportTitleInitials} Market based on region:
+                  {reportData?.reportTitle.split(' ').slice(0, 2).join(' ')} Market based on region:
                 </p>
                 <div>
-                  {reportData?.BasedOnRegion?.map((region) => (
+                  {reportData?.basedOnRegion?.map((region) => (
                     <div key={region?._id}>
                       <p className="pb-2 font-semibold">{region?.heading}</p>
                       <ul className="list-disc pb-2 pl-7 md:pl-10">
@@ -231,7 +227,15 @@ const Page = () => {
               </div>
             </div>
           ) : (
-            <p>No report data</p>
+            <div className="w-full flex flex-col items-center">
+             <Image
+              src={noresult}
+              width={300}
+              height={300}
+              alt="no result"
+             />
+            <p className="text-2xl font-semibold">No report data</p>
+            </div>
           )}
         </div>
       )}

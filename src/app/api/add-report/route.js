@@ -13,13 +13,16 @@ export async function POST(req) {
   try {
     await connectDB();
     const extractData = await req.json();
-
+    
     // Generate a new report ID
     const reportID = generateReportID();
-
+    
     // Add the reportID to the data before creating the report
-    const newData = { ...extractData, reportID };
-
+    const newData = {
+      ...extractData,
+      reportID,
+    };
+    
     const newProduct = await Report.create(newData);
 
     if (newProduct) {
@@ -34,10 +37,10 @@ export async function POST(req) {
       });
     }
   } catch (error) {
-    console.log("error from adding report", error);
+    console.log("Error from adding report", error);
     return NextResponse.json({
       success: false,
-      message: "Something went wrong ! Please try again later",
+      message: "Something went wrong! Please try again later",
     });
   }
 }
