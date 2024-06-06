@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 
-const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_URL = process.env.DATABASE_URL; 
 
 // Throw an error if DATABASE_URL is not defined
 if (!DATABASE_URL) {
   throw new Error(
-    "Please define the DATABASE_URL environment variable inside .env.local",
+    "Please define the DATABASE_URL environment variable inside .env.local"
   );
 }
 
@@ -30,6 +30,7 @@ async function connectDB() {
     // Define connection options
     const connectionOptions = {
       bufferCommands: false,
+      dbName: 'universal-market-research', 
     };
 
     // Establish a connection to MongoDB
