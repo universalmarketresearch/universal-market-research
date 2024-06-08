@@ -8,6 +8,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import noresult from "../../../Images/no-results.png";
 import Image from "next/image";
+import Modal from "@/components/Modal/Modal";
 
 const FRONTEND_BASE_URL = process.env.NEXT_PUBLIC_FRONTEND_BASE_URL;
 
@@ -18,7 +19,10 @@ const Page = () => {
   const id = params?.slug?.[1];
   const [loading, setLoading] = useState(true);
   const [isDeletingReport, setIsDeletingReport] = useState(false);
+  const [messageSending, setMessageSending] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
   const router = useRouter();
+
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -51,6 +55,15 @@ const Page = () => {
     productById();
   }, [productById]);
 
+  useEffect(() => {
+    if (reportData) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        reportName: reportData.reportTitle,
+      }));
+    }
+  }, [reportData]);
+
   const deleteReport = async () => {
     try {
       setIsDeletingReport(true);
@@ -79,6 +92,62 @@ const Page = () => {
     setSelectedReportToUpdate(reportData);
     router.push(`/update-report`);
   };
+
+  const [formData, setFormData] = useState({
+    reportName: "",
+    name: "",
+    companyName: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setMessageSending(true)
+    console.log(formData);
+    setFormData({
+      reportName: "",
+      name: "",
+      companyName: "",
+      email: "",
+      phone: "",
+      message: "",
+    })
+    setModalOpen(false);
+    setMessageSending(false)
+  };
+
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
+  const isValidForm = () => {
+    return (
+      formData &&
+      formData.email &&
+      formData.email.trim() !== "" &&
+      formData.name &&
+      formData.name.trim() !== "" &&
+      formData.companyName &&
+      formData.companyName.trim() !== "" &&
+      formData.phone &&
+      formData.phone.trim() !== "" &&
+      formData.message &&
+      formData.message.trim() !== ""
+    );
+  };
+  
+
 
   return (
     <div className="mx-auto mt-10 max-w-7xl px-5 pb-10 md:mt-20">
@@ -110,7 +179,7 @@ const Page = () => {
                     {reportData?.publishDate}
                   </p>
                   <p>
-                    <span className="font-medium">Base Year : </span>{' '}
+                    <span className="font-medium">Base Year : </span>{" "}
                     {reportData?.baseYear}
                   </p>
                   <p>
@@ -124,7 +193,7 @@ const Page = () => {
                         onClick={deleteReport}
                         disabled={isDeletingReport}
                         className={`w-full rounded bg-red-400 px-6 py-1.5 font-medium leading-normal text-white shadow transition duration-150 ease-in-out  disabled:opacity-50 ${
-                          isDeletingReport ? 'cursor-not-allowed' : ''
+                          isDeletingReport ? "cursor-not-allowed" : ""
                         }`}
                       >
                         {isDeletingReport ? (
@@ -132,7 +201,7 @@ const Page = () => {
                             <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-t-2 border-white"></div>
                           </div>
                         ) : (
-                          'Delete report'
+                          "Delete report"
                         )}
                       </button>
                       <button
@@ -144,21 +213,152 @@ const Page = () => {
                       </button>
                     </>
                   )}
-                  <button className="w-full rounded bg-yellow-400 px-6 py-1.5 font-medium leading-normal text-white shadow">
+                  <button
+                    onClick={openModal}
+                    className="w-full rounded bg-yellow-400 px-6 py-1.5 font-medium leading-normal text-white shadow"
+                  >
                     Request Sample PDF
                   </button>
+                  <Modal isOpen={isModalOpen} closeModal={closeModal}>
+                    <div className="md:w-[500px] w-[260px] ">
+                      <div className="md:py-2">
+                        <div className="px-2 md:px-4">
+                          <p className="mt-4 text-lg capitalize text-center">
+                            Request Sample PDF for {reportData?.reportTitle}
+                          </p>
+                          <form
+                            onSubmit={handleSubmit}
+                            className="mt-8 space-y-4"
+                          >
+                            <div className="flex flex-col md:flex-row gap-2 items-center">
+                              <div className="grid w-full items-center gap-1.5">
+                                <label
+                                  className="text-sm font-medium leading-none text-gray-700 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                  htmlFor="fullname"
+                                >
+                                  Full Name
+                                </label>
+                                <input
+                                  className="h-10 w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none"
+                                  type="text"
+                                  id="name"
+                                  name="name"
+                                  value={formData.name}
+                                  onChange={handleChange}
+                                  required
+                                  placeholder="Full Name"
+                                />
+                              </div>
+                              <div className="grid w-full  items-center gap-1.5">
+                                <label
+                                  className="text-sm font-medium leading-none text-gray-700 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                  htmlFor="companyName"
+                                >
+                                  Company Name
+                                </label>
+                                <input
+                                  className="h-10 w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none"
+                                  type="text"
+                                  id="companyName"
+                                  name="companyName"
+                                  value={formData.companyName}
+                                  onChange={handleChange}
+                                  required
+                                  placeholder="Company Name"
+                                />
+                              </div>
+                            </div>
+                            <div className="flex flex-col md:flex-row gap-2 items-center">
+                              <div className="grid w-full  items-center gap-1.5">
+                                <label
+                                  className="text-sm font-medium leading-none text-gray-700 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                  htmlFor="email"
+                                >
+                                  Company Email
+                                </label>
+                                <input
+                                  className="h-10 w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none"
+                                  type="email"
+                                  id="email"
+                                  name="email"
+                                  value={formData.email}
+                                  onChange={handleChange}
+                                  required
+                                  placeholder="Company Email"
+                                />
+                              </div>
+                              <div className="grid w-full  items-center gap-1.5">
+                                <label
+                                  className="text-sm font-medium leading-none text-gray-700 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                  htmlFor="phone_number"
+                                >
+                                  Phone number
+                                </label>
+                                <input
+                                  className="h-10 w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none"
+                                  type="tel"
+                                  id="phone"
+                                  name="phone"
+                                  value={formData.phone}
+                                  onChange={handleChange}
+                                  required
+                                  placeholder="Phone number"
+                                />
+                              </div>
+                            </div>
+                            <div className="grid w-full  items-center gap-1.5">
+                              <label
+                                className="text-sm font-medium leading-none text-gray-700 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                htmlFor="message"
+                              >
+                                Message
+                              </label>
+                              <textarea
+                                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none"
+                                id="message"
+                                name="message"
+                                value={formData.message}
+                                onChange={handleChange}
+                                rows={5}
+                                required
+                                placeholder="Feel free to share your research requirements"
+                              />
+                            </div>
+                            <button
+                              type="submit"
+                              disabled={!isValidForm() || messageSending}
+                              className={`w-full rounded bg-[#60a5fa] px-6 py-1.5 font-medium leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] disabled:opacity-50 ${
+                                messageSending ? "cursor-not-allowed" : ""
+                              }`}
+                            >
+                              {messageSending ? (
+                                <div className="flex items-center justify-center">
+                                  <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-t-2 border-white"></div>
+                                </div>
+                              ) : (
+                                "Send Message"
+                              )}
+                            </button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </Modal>
                 </div>
               </div>
               <div className="mt-3 px-2">
-                <p className="pb-2 text-xl font-semibold">Market Overview :- </p>
+                <p className="pb-2 text-xl font-semibold">
+                  Market Overview :-{" "}
+                </p>
                 <p className="whitespace-pre-wrap pb-2 text-justify">
                   {reportData?.marketOverview}
                 </p>
 
                 {/* Top Key Players Section */}
                 <p className="pb-2 text-xl font-semibold">
-                  Top Key Players Covered in{' '}
-                  {reportData?.reportTitle.split(' ').slice(0, 2).join(' ')} Market:
+                  Top Key Players Covered in{" "}
+                  {reportData?.reportTitle.split(" ").slice(0, 2).join(" ")}{" "}
+                  Market:
                 </p>
                 <ul className="list-disc pb-2 pl-7 md:pl-10">
                   {reportData?.topKeyPlayers?.map((player) => (
@@ -167,33 +367,44 @@ const Page = () => {
                 </ul>
 
                 {/* Market Dynamics and Factors */}
-                <p className="pb-2 text-xl font-semibold">Market Dynamics and Factors:</p>
+                <p className="pb-2 text-xl font-semibold">
+                  Market Dynamics and Factors:
+                </p>
                 <p className="whitespace-pre-wrap pb-2 text-justify">
                   {reportData?.marketDynamicFactors}
                 </p>
 
                 {/* Market Report Highlight */}
                 <p className="pb-2 text-xl font-semibold">
-                  {reportData?.reportTitle.split(' ').slice(0, 2).join(' ')} Market Report Highlight:
+                  {reportData?.reportTitle.split(" ").slice(0, 2).join(" ")}{" "}
+                  Market Report Highlight:
                 </p>
                 {reportData?.marketReportHighlight?.map((highlight) => (
                   <p className="pb-2 text-justify" key={highlight?.heading}>
-                    <span className="font-semibold">By {highlight?.heading}, </span> {highlight?.highlightData}
+                    <span className="font-semibold">
+                      By {highlight?.heading},{" "}
+                    </span>{" "}
+                    {highlight?.highlightData}
                   </p>
                 ))}
 
                 {/* Key Industry Development */}
-                <p className="pb-2 text-xl font-semibold">Key Industry Development:</p>
+                <p className="pb-2 text-xl font-semibold">
+                  Key Industry Development:
+                </p>
                 {reportData?.keyIndustryDevelopment?.map((industrykey) => (
                   <p className="pb-2 text-justify" key={industrykey?.year}>
-                    <span className="font-semibold">In {industrykey?.year}, </span>
+                    <span className="font-semibold">
+                      In {industrykey?.year},{" "}
+                    </span>
                     {industrykey?.data}
                   </p>
                 ))}
 
                 {/* Market Segmentation */}
                 <p className="pb-2 text-xl font-semibold">
-                  {reportData?.reportTitle.split(' ').slice(0, 2).join(' ')} Market Segmentation:
+                  {reportData?.reportTitle.split(" ").slice(0, 2).join(" ")}{" "}
+                  Market Segmentation:
                 </p>
                 <div>
                   {reportData?.marketSegmentation?.map((segment) => (
@@ -210,7 +421,8 @@ const Page = () => {
 
                 {/* Market based on region */}
                 <p className="pb-2 text-xl font-semibold">
-                  {reportData?.reportTitle.split(' ').slice(0, 2).join(' ')} Market based on region:
+                  {reportData?.reportTitle.split(" ").slice(0, 2).join(" ")}{" "}
+                  Market based on region:
                 </p>
                 <div>
                   {reportData?.basedOnRegion?.map((region) => (
@@ -228,13 +440,8 @@ const Page = () => {
             </div>
           ) : (
             <div className="w-full flex flex-col items-center">
-             <Image
-              src={noresult}
-              width={300}
-              height={300}
-              alt="no result"
-             />
-            <p className="text-2xl font-semibold">No report data</p>
+              <Image src={noresult} width={300} height={300} alt="no result" />
+              <p className="text-2xl font-semibold">No report data</p>
             </div>
           )}
         </div>

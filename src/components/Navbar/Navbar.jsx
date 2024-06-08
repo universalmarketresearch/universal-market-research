@@ -12,7 +12,7 @@ import {
 import { GlobalContext } from "@/context/GlobalContext";
 import { FiUser } from "react-icons/fi";
 import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 function Navbar() {
@@ -21,9 +21,14 @@ function Navbar() {
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
   const navbarRef = useRef(null);
   const { isLoggedIn, setIsLoggedIn, setUserInfo } = useContext(GlobalContext);
+  const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
+    setDropdownOpen(false);
+    setUserMenuOpen(false);
+    setMenuOpen(false);
+
     const handleClickOutside = (event) => {
       if (navbarRef.current && !navbarRef.current.contains(event.target)) {
         setDropdownOpen(false);
@@ -37,7 +42,7 @@ function Navbar() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [pathname]);
 
   const toggleMenu = () => {
     setMenuOpen(!isMenuOpen);
