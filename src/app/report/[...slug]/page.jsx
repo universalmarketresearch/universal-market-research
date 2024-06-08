@@ -19,8 +19,10 @@ const Page = () => {
   const id = params?.slug?.[1];
   const [loading, setLoading] = useState(true);
   const [isDeletingReport, setIsDeletingReport] = useState(false);
+  const [messageSending, setMessageSending] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
   const router = useRouter();
+
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -53,6 +55,15 @@ const Page = () => {
     productById();
   }, [productById]);
 
+  useEffect(() => {
+    if (reportData) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        reportName: reportData.reportTitle,
+      }));
+    }
+  }, [reportData]);
+
   const deleteReport = async () => {
     try {
       setIsDeletingReport(true);
@@ -83,6 +94,7 @@ const Page = () => {
   };
 
   const [formData, setFormData] = useState({
+    reportName: "",
     name: "",
     companyName: "",
     email: "",
@@ -97,7 +109,18 @@ const Page = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setMessageSending(true)
     console.log(formData);
+    setFormData({
+      reportName: "",
+      name: "",
+      companyName: "",
+      email: "",
+      phone: "",
+      message: "",
+    })
+    setModalOpen(false);
+    setMessageSending(false)
   };
 
   const openModal = () => {
@@ -107,6 +130,24 @@ const Page = () => {
   const closeModal = () => {
     setModalOpen(false);
   };
+
+  const isValidForm = () => {
+    return (
+      formData &&
+      formData.email &&
+      formData.email.trim() !== "" &&
+      formData.name &&
+      formData.name.trim() !== "" &&
+      formData.companyName &&
+      formData.companyName.trim() !== "" &&
+      formData.phone &&
+      formData.phone.trim() !== "" &&
+      formData.message &&
+      formData.message.trim() !== ""
+    );
+  };
+  
+
 
   return (
     <div className="mx-auto mt-10 max-w-7xl px-5 pb-10 md:mt-20">
@@ -172,7 +213,10 @@ const Page = () => {
                       </button>
                     </>
                   )}
-                  <button onClick={openModal} className="w-full rounded bg-yellow-400 px-6 py-1.5 font-medium leading-normal text-white shadow">
+                  <button
+                    onClick={openModal}
+                    className="w-full rounded bg-yellow-400 px-6 py-1.5 font-medium leading-normal text-white shadow"
+                  >
                     Request Sample PDF
                   </button>
                   <Modal isOpen={isModalOpen} closeModal={closeModal}>
@@ -282,9 +326,18 @@ const Page = () => {
                             </div>
                             <button
                               type="submit"
-                              className="w-full rounded-md px-3 py-2 text-sm font-semibold bg-[#4285f4] hover:bg-[#6f9eff] text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                              disabled={!isValidForm() || messageSending}
+                              className={`w-full rounded bg-[#60a5fa] px-6 py-1.5 font-medium leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] disabled:opacity-50 ${
+                                messageSending ? "cursor-not-allowed" : ""
+                              }`}
                             >
-                              Send Message
+                              {messageSending ? (
+                                <div className="flex items-center justify-center">
+                                  <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-t-2 border-white"></div>
+                                </div>
+                              ) : (
+                                "Send Message"
+                              )}
                             </button>
                           </form>
                         </div>
